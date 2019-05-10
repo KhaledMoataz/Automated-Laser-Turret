@@ -1,6 +1,6 @@
 # Automated Laser Turret
 
-A prototype for a missle base, where it detects strange objects that enters its range and fire on them. The turret has 2 degrees of freedom (rotation around x axis and z axis).
+A prototype for a missle defence, where it detects strange objects that enters its range and fire on them. The turret has 2 degrees of freedom (rotation around x axis and z axis).
 
 ## Modes of Operation
 Power Button : Select Mode
@@ -21,6 +21,7 @@ Button 8 : Save remoteX, remoteY values in EEPROM (Calibration values)
 - The Arduino converts the center from pixel space to angles to be given to the motors.
 ## Main Components
   - Android mobile with good camera for image processing
+  - Arduino uno or mega
   - 2 - Servo motors for z-axis rotation (left, right) and x-axis rotation (up and down)
   - Laser or Gun for firing
   - Relay for controlling the firing
@@ -29,5 +30,5 @@ Button 8 : Save remoteX, remoteY values in EEPROM (Calibration values)
   - LCD & Potentiometer
   - Adapter & Power Supply Module
 ## Demo Video
-[![Automate Laser Turret](https://drive.google.com/file/d/1Lp_w0d5DYRpWBZ4ceeOByaOwlTxlCtQY/view?usp=sharing)](https://www.youtube.com/watch?v=4U9zLkuj-vE)
+[![Automate Laser Turret](https://img.youtube.com/vi/4U9zLkuj-vE/hqdefault.jpg)](https://www.youtube.com/watch?v=4U9zLkuj-vE)
 
