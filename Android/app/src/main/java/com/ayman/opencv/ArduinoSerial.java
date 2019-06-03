@@ -27,26 +27,9 @@ public class ArduinoSerial {
     private UsbDeviceConnection connection;
     private byte[] data;
 
-    UsbSerialInterface.UsbReadCallback mCallback = new UsbSerialInterface.UsbReadCallback() { //Defining a Callback which triggers whenever data is read.
-        @Override
-        public void onReceivedData(byte[] data) {
-//            String data = null;
-//            try {
-//                data = new String(arg0, "UTF-8");
-//                data.concat("/n");
-//                tvAppend(textView, data);
-//            if(data != null && data.length > 0) {
-//                Toast.makeText(mContext, String.valueOf((int) data[0]), Toast.LENGTH_LONG).show();
-//            }
-//            } catch (UnsupportedEncodingException e) {
-//                e.printStackTrace();
-//            }
+    private UsbSerialInterface.UsbReadCallback mCallback;
 
-
-        }
-    };
-
-    private final String ACTION_USB_PERMISSION = "com.hariharan.arduinousb.USB_PERMISSION";
+    private final String ACTION_USB_PERMISSION = "com.ayman.arduinousb.USB_PERMISSION";
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() { //Broadcast Receiver to automatically start and stop the Serial connection.
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -86,8 +69,39 @@ public class ArduinoSerial {
 
 
     public ArduinoSerial(Context context) {
+//        UsbSerialInterface.UsbReadCallback callback = new UsbSerialInterface.UsbReadCallback() { //Defining a Callback which triggers whenever data is read.
+//            @Override
+//            public void onReceivedData(byte[] data) {
+//                if(data != null && data.length > 0) {
+//                    Log.d("ArduinoData", String.valueOf(data[0]));
+//                }
+////            String dataString = null;
+////            try {
+////                dataString = new String(data, "UTF-8");
+////                dataString.concat("/n");
+////                Log.d("ArduinoData", dataString);
+////            } catch (UnsupportedEncodingException e) {
+////                e.printStackTrace();
+////            }
+//
+//
+//            }
+//        };
+        this(context, new UsbSerialInterface.UsbReadCallback() {
+            @Override
+            public void onReceivedData(byte[] data) {
+                if (data != null && data.length > 0) {
+                    for (byte element : data)
+                        Log.d("ArduinoData", String.valueOf(element));
+                }
+            }
+        });
+    }
+
+    public ArduinoSerial(Context context, UsbSerialInterface.UsbReadCallback callback) {
         mContext = context;
         usbManager = (UsbManager) context.getSystemService(Activity.USB_SERVICE);
+        mCallback = callback;
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
@@ -133,9 +147,25 @@ public class ArduinoSerial {
             serialPort.write(buffer);
     }
 
-    public void send(int x) {
-        data[0] = (byte) x;
-        data [1] = (byte) (x >> 8);
+    public void send(int x, int type) {
+        type <<= 6;
+        data[0] = (byte) (x & 0x003f | type);
+        data[1] = (byte) ((x >> 6) & 0x003f | type);
+        send(data);
+    }
+
+    public void sendInt(int x) {
+        byte data[] = new byte[]{(byte) x, (byte) (x >> 8)};
+        send(data);
+    }
+
+    public void send(int... numbers) {
+        if (numbers.length > 3)
+            return;
+        for (int i = 0; i < numbers.length; i += 2) {
+            data[i] = (byte) (numbers[i] | i / 2);
+            data[i + 1] = (byte) ((numbers[i] >> 8) | i / 2);
+        }
         send(data);
     }
 
